@@ -77,6 +77,11 @@ Initialized empty MyGit repository in /path/to/your/project/.mygit
 Error: repository already initialized
 ```
 
+### Check Repository Status
+Run the `status` command to view the current state of the repository:
+```bash
+mygit status
+
 ---
 
 ## Dependencies

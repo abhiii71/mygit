@@ -9,7 +9,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "mygit",
-	Short: "MyGit is a simple version control system",
+	Short: "MyGit is a customized version control system",
 	Long:  `A Git-like version control system written in Go using the Cobra framework.`,
 }
 
