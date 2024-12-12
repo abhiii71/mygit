@@ -12,19 +12,18 @@ func Status() error {
 	if _, err := os.Stat(".mygit"); os.IsNotExist(err) {
 		return fmt.Errorf("not a MyGit repository (or any of the parent directories): .mygit")
 	}
-	/*
-		patterns, err := ParseMyGitIgnore()
-		if err != nil {
-			return fmt.Errorf("error parsing .mygitignore: %v", err)
-		}
 
-	*/
-	trackedFiles, err := getTrackedFiles()
+	patterns, err := ParseMyGitIgnore()
+	if err != nil {
+		return fmt.Errorf("error parsing .mygitignore: %v", err)
+	}
+
+	trackedFiles, err := GetTrackedFiles()
 	if err != nil {
 		return fmt.Errorf("error reading tracked files: %v", err)
 	}
 
-	untrackedFiles, err := getUntrackedFiles(trackedFiles)
+	untrackedFiles, err := getUntrackedFiles(trackedFiles, patterns)
 	if err != nil {
 		return fmt.Errorf("error reading untracked files: %v", err)
 	}
@@ -45,25 +44,23 @@ func Status() error {
 	return nil
 }
 
-func getTrackedFiles() ([]string, error) {
-	return []string{"example_tracked_file.txt"}, nil
-}
-
-func getUntrackedFiles(trackedFiles []string) ([]string, error) {
+func getUntrackedFiles(trackedFiles []string, patterns []string) ([]string, error) {
 	var untracked []string
 	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
+
 		if info.IsDir() || path == ".mygit" || filepath.HasPrefix(path, ".mygit/") {
 			return nil
 		}
 
-		if !isTracked(path, trackedFiles) {
+		if !isTracked(path, trackedFiles) && !IsIgnored(path, patterns) {
 			untracked = append(untracked, path)
 		}
 		return nil
 	})
+
 	if err != nil {
 		return nil, err
 	}

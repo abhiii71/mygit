@@ -84,6 +84,24 @@ mygit status
 
 ---
 
+### Tracked and Untracked Files
+The `status` command displays:
+- **Tracked files**: Files that have been added to the `.mygit/index` file.
+- **Untracked files**: Files in the directory that are not in `.mygit/index` and not ignored by `.mygitignore`.
+
+#### Example:
+```bash
+Tracked files:
+  example_tracked_file.txt
+
+Untracked files:
+  new_file.txt
+  another_new_file.txt
+Adding Files
+
+
+------------------------------------------------
+
 ## Dependencies
 - **Cobra**: Framework for building CLI commands.
 
