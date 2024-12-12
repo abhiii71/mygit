@@ -4,12 +4,21 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/fatih/color"
 )
 
 func Status() error {
 	if _, err := os.Stat(".mygit"); os.IsNotExist(err) {
 		return fmt.Errorf("not a MyGit repository (or any of the parent directories): .mygit")
 	}
+	/*
+		patterns, err := ParseMyGitIgnore()
+		if err != nil {
+			return fmt.Errorf("error parsing .mygitignore: %v", err)
+		}
+
+	*/
 	trackedFiles, err := getTrackedFiles()
 	if err != nil {
 		return fmt.Errorf("error reading tracked files: %v", err)
@@ -20,14 +29,17 @@ func Status() error {
 		return fmt.Errorf("error reading untracked files: %v", err)
 	}
 
+	green := color.New(color.FgGreen).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
+
 	fmt.Println("Tracked Files:")
 	for _, file := range trackedFiles {
-		fmt.Println(" ", file)
+		fmt.Println(" ", green(file))
 	}
 
 	fmt.Println("Untracked Files:")
 	for _, file := range untrackedFiles {
-		fmt.Println(" ", file)
+		fmt.Println(" ", red(file))
 	}
 
 	return nil
