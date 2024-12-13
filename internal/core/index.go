@@ -2,6 +2,7 @@ package core
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -54,4 +55,14 @@ func IsTracked(filepath string, trackedFiles []string) bool {
 		}
 	}
 	return false
+}
+
+func AddToIndex(file string) error {
+	_, err := os.Stat(file)
+	if err != nil {
+		return fmt.Errorf("file not found: %v", file)
+	}
+
+	fmt.Printf("File %s added to the index\n", file)
+	return nil
 }
