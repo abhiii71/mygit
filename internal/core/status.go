@@ -67,6 +67,7 @@ func getUntrackedFiles(trackedFiles []string, patterns []string) ([]string, erro
 	return untracked, nil
 }
 
+/*
 func isTracked(path string, trackedFiles []string) bool {
 	for _, tracked := range trackedFiles {
 		if tracked == path {
@@ -75,3 +76,4 @@ func isTracked(path string, trackedFiles []string) bool {
 	}
 	return false
 }
+*/

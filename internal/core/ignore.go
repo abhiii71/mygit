@@ -7,6 +7,48 @@ import (
 	"strings"
 )
 
+func readIndex() ([]string, error) {
+	indexPath := ".mygit/index"
+	var trackedFiles []string
+
+	if _, err := os.Stat(indexPath); os.IsNotExist(err) {
+		return trackedFiles, nil
+	}
+
+	file, err := os.Open(indexPath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		trackedFiles = append(trackedFiles, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return trackedFiles, nil
+}
+
+func writeIndex(trackedFiles []string) error {
+	indexPath := ".mygit/index"
+	file, err := os.Create(indexPath)
+	if err != nil {
+		return nil
+	}
+	defer file.Close()
+
+	for _, filePath := range trackedFiles {
+		_, err := file.WriteString(filePath + "\n")
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func ParseMyGitIgnore() ([]string, error) {
 	var patterns []string
 

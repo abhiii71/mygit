@@ -4,27 +4,48 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
-func AddFiles(files []string) error {
-	ignoredFiles, err := getIgnoredFiles()
-	if err != nil {
-		return err
+func Add(files []string) error {
+	if _, err := os.Stat(".mygit"); os.IsNotExist(err) {
+		return fmt.Errorf("not a MyGit repository (or any of the parent directories): .mygit")
 	}
+
+	//	indexPath := ".mygit/index"
+
+	//Read the existing index
+	existingIndex, err := readIndex()
+	if err != nil {
+		return fmt.Errorf("error reading index: %v", err)
+	}
+
+	// Filter and add files
 
 	for _, file := range files {
-		if contains(ignoredFiles, file) {
-			fmt.Println("Warning: %s is ignored by .mygitignore\n", file)
-			continue
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			return fmt.Errorf(" file %s doesn't exists\n", file)
 		}
 
-		err := index.AddToIndex(file)
-		if err != nil {
-			return fmt.Errorf("failed to add file %s: %v", file, err)
+		absPath, _ := filepath.Abs(file)
+		if !isTracked(absPath, existingIndex) {
+			existingIndex = append(existingIndex, absPath)
 		}
 	}
+	if err := writeIndex(existingIndex); err != nil {
+		return fmt.Errorf("error writing index: %v", err)
+	}
 	return nil
+}
+
+func isTracked(file string, trackedFiles []string) bool {
+	for _, tracked := range trackedFiles {
+		if strings.EqualFold(file, tracked) {
+			return true
+		}
+	}
+	return false
 }
 
 func getIgnoredFiles() ([]string, error) {
