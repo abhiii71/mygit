@@ -73,8 +73,15 @@ func buildCommitContent(message string, snapshot map[string]string) string {
 	var builder strings.Builder
 	builder.WriteString("Commit Message: " + message + "\n")
 	builder.WriteString("Timestamp: " + time.Now().Format(time.RFC3339) + "\n")
-	builder.WriteString("Files:\n")
 
+	// Add parent reference
+	headFile := ".mygit/HEAD"
+	if headData, err := os.ReadFile(headFile); err == nil && len(headData) > 0 {
+		parentHash := strings.TrimSpace(string(headData))
+		builder.WriteString("Parent: " + parentHash + "\n")
+	}
+
+	builder.WriteString("Files:\n")
 	for file, content := range snapshot {
 		builder.WriteString(fmt.Sprintf("%s\n%s\n", file, content))
 	}
